@@ -106,11 +106,16 @@ glibc_backend_once()
     esac
 
     [ "${CT_GLIBC_ENABLE_WERROR}" != "y" ] && extra_config+=("--disable-werror")
+
     [ -n "${CT_PKGVERSION}" ] && extra_config+=("--with-pkgversion=${CT_PKGVERSION}")
     [ -n "${CT_TOOLCHAIN_BUGURL}" ] && extra_config+=("--with-bugurl=${CT_TOOLCHAIN_BUGURL}")
 
     if [ -n "${CT_GLIBC_SSP}" ]; then
         extra_config+=("--enable-stack-protector=${CT_GLIBC_SSP}")
+    fi
+
+    if [ "${CT_GLIBC_ENABLE_SYSTEMTAP}" = "y" ]; then
+        extra_config+=("--enable-systemtap")
     fi
 
     touch config.cache
