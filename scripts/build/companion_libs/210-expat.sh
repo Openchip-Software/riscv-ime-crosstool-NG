@@ -4,6 +4,7 @@ do_expat_get() { :; }
 do_expat_extract() { :; }
 do_expat_for_build() { :; }
 do_expat_for_host() { :; }
+do_expat_headers() { :; }
 do_expat_for_target() { :; }
 
 if [ "${CT_EXPAT_TARGET}" = "y" -o "${CT_EXPAT}" = "y" ]; then

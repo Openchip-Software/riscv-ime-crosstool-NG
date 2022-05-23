@@ -9,6 +9,7 @@ do_newlib_nano_get() { :; }
 do_newlib_nano_extract() { :; }
 do_newlib_nano_for_build() { :; }
 do_newlib_nano_for_host() { :; }
+do_newlib_nano_headers() { :; }
 do_newlib_nano_for_target() { :; }
 
 if [ "${CT_COMP_LIBS_NEWLIB_NANO}" = "y" ]; then
