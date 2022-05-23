@@ -109,6 +109,10 @@ config SYSTEMTAP_NEEDED
     bool
     select COMP_LIBS_SYSTEMTAP
 
+config SYSTEMTAP_TARGET
+    bool
+    select COMP_LIBS_SYSTEMTAP
+
 # FIXME remove these legacy knobs
 config LIBICONV
     def_bool y

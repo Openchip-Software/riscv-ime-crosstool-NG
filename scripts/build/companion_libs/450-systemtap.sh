@@ -21,30 +21,9 @@ do_systemtap_extract() {
     CT_ExtractPatch SYSTEMTAP
 }
 
-# Build SYSTEMTAP for running on build
-# - always build statically
-# - install in build-tools prefix
-do_systemtap_for_build() {
-    local -a systemtap_opts
+if [ "${CT_SYSTEMTAP}" = "y" ]; then
+# We don't need SystemTap for build
 
-    case "${CT_TOOLCHAIN_TYPE}" in
-        native|cross)   return 0;;
-    esac
-
-    CT_DoStep INFO "Installing SYSTEMTAP for build"
-    CT_mkdir_pushd "${CT_BUILD_DIR}/build-systemtap-build-${CT_BUILD}"
-
-    systemtap_opts+=( "host=${CT_BUILD}" )
-    systemtap_opts+=( "prefix=${CT_BUILDTOOLS_PREFIX_DIR}" )
-    systemtap_opts+=( "cflags=${CT_CFLAGS_FOR_BUILD}" )
-    systemtap_opts+=( "ldflags=${CT_LDFLAGS_FOR_BUILD}" )
-    do_systemtap_backend "${systemtap_opts[@]}"
-
-    CT_Popd
-    CT_EndStep
-}
-
-# Build SYSTEMTAP for running on host
 do_systemtap_for_host() {
     local -a systemtap_opts
 
@@ -60,6 +39,7 @@ do_systemtap_for_host() {
     CT_Popd
     CT_EndStep
 }
+fi
 
 if [ "${CT_SYSTEMTAP_TARGET}" = "y" ]; then
 do_systemtap_for_target() {
@@ -125,12 +105,13 @@ do_systemtap_backend() {
     CFLAGS="${cflags} -fexceptions"                 \
     LDFLAGS="${ldflags}"                            \
     ${CONFIG_SHELL}                                 \
-    "${CT_SRC_DIR}/systemtap/configure"                   \
+    "${CT_SRC_DIR}/systemtap/configure"             \
         --build=${CT_BUILD}                         \
         --host=${host}                              \
         --prefix="${prefix}"                        \
         --disable-shared                            \
         --enable-static                             \
+        --without-python2-probes	            \
         "${extra_config[@]}"
 
     CT_DoLog EXTRA "Building SYSTEMTAP"
