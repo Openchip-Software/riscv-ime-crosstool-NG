@@ -4,6 +4,7 @@ do_ncurses_get() { :; }
 do_ncurses_extract() { :; }
 do_ncurses_for_build() { :; }
 do_ncurses_for_host() { :; }
+do_ncurses_headers() { :; }
 do_ncurses_for_target() { :; }
 
 if [ "${CT_NCURSES_TARGET}" = "y" -o "${CT_NCURSES}" = "y" ]; then

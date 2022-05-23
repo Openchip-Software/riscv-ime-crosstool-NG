@@ -4,6 +4,7 @@ do_gnuprumcu_get() { :; }
 do_gnuprumcu_extract() { :; }
 do_gnuprumcu_for_build() { :; }
 do_gnuprumcu_for_host() { :; }
+do_gnuprumcu_headers() { :; }
 do_gnuprumcu_for_target() { :; }
 
 if [ "${CT_COMP_LIBS_GNUPRUMCU}" = "y" ]; then

@@ -6,6 +6,7 @@ do_zlib_get() { :; }
 do_zlib_extract() { :; }
 do_zlib_for_build() { :; }
 do_zlib_for_host() { :; }
+do_zlib_headers() { :; }
 do_zlib_for_target() { :; }
 
 # Overide functions depending on configuration
