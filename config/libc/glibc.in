@@ -424,6 +424,7 @@ config GLIBC_ENABLE_COMMON_FLAG
 
 config GLIBC_ENABLE_SYSTEMTAP
     bool "Enable SystemTap (stap) support."
+    select SYSTEMTAP_NEEDED
     help
       SystemTap (stap) is a dynamic instrumentation tool for Linux systems.
       This flag enables the generation of stap probe points in glibc.
