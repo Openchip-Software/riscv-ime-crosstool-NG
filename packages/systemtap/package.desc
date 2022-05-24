@@ -1,4 +1,3 @@
-relevantpattern='*.*|.'
 mirrors='$(CT_Mirrors sourceware systemtap/releases)'
 repository='git https://sourceware.org/git/systemtap.git'
 relevantpattern='*.*|.'
