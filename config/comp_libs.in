@@ -119,6 +119,15 @@ config ZLIB_TARGET
     bool
     select COMP_LIBS_ZLIB
 
+config SYSTEMTAP_NEEDED
+    bool
+    select COMP_LIBS_SYSTEMTAP
+
+config SYSTEMTAP_TARGET
+    bool
+    select ELFUTILS_TARGET
+    select COMP_LIBS_SYSTEMTAP
+
 # FIXME remove these legacy knobs
 config LIBICONV
     def_bool y
@@ -167,5 +176,9 @@ config NCURSES
 config ZLIB
     def_bool y
     depends on ZLIB_NEEDED
+
+config SYSTEMTAP
+    def_bool y
+    depends on SYSTEMTAP_NEEDED
 
 endmenu
