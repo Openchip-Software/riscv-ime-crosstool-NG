@@ -6,6 +6,7 @@ do_elfutils_get() { :; }
 do_elfutils_extract() { :; }
 do_elfutils_for_build() { :; }
 do_elfutils_for_host() { :; }
+do_elfutils_headers() { :; }
 do_elfutils_for_target() { :; }
 
 # Overide functions depending on configuration

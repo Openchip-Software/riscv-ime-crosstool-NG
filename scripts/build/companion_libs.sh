@@ -37,6 +37,13 @@ do_companion_libs_for_host() {
     done
 }
 
+# Build the companion libs headers
+do_companion_libs_headers() {
+    for f in ${CT_COMP_LIBS_FACILITY_LIST}; do
+        do_${f}_headers
+    done
+}
+
 # Build the companion libs facilities for target
 do_companion_libs_for_target() {
     for f in ${CT_COMP_LIBS_FACILITY_LIST}; do
