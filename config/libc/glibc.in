@@ -422,4 +422,11 @@ config GLIBC_ENABLE_COMMON_FLAG
       Starting from GCC 10, the default behavior is changed to -fno-common.
       That leads to linking errors in GLibc versions older than 2.30.
 
+config GLIBC_ENABLE_SYSTEMTAP
+    bool "Enable SystemTap (stap) support."
+    select SYSTEMTAP_TARGET
+    help
+      SystemTap (stap) is a dynamic instrumentation tool for Linux systems.
+      This flag enables the generation of stap probe points in glibc.
+
 endif # KERNEL_LINUX

@@ -113,6 +113,10 @@ glibc_backend_once()
         extra_config+=("--enable-stack-protector=${CT_GLIBC_SSP}")
     fi
 
+    if [ "${CT_GLIBC_ENABLE_SYSTEMTAP}" = "y" ]; then
+        extra_config+=("--enable-systemtap")
+    fi
+
     touch config.cache
 
     # Until it became explicitly controllable with --enable-stack-protector=...,
