@@ -130,6 +130,11 @@ do_systemtap_configure() {
         --enable-static                             \
         --without-python2-probes	            \
         --without-python3-probes	            \
+	--without-debuginfod                        \
+	--without-nss                               \
+	--without-openssl                           \
+	--disable-sqlite                            \
+	--without-avahi                             \
         "${extra_config[@]}"
 }
 
