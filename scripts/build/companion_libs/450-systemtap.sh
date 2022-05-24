@@ -36,9 +36,7 @@ do_systemtap_for_host() {
     systemtap_opts+=( "cflags=${CT_CFLAGS_FOR_HOST}" )
     systemtap_opts+=( "ldflags=${CT_LDFLAGS_FOR_HOST}" )
 
-    do_systemtap_configure "${systemtap_opts[@]}"
-    do_systemtap_build
-    do_systemtap_install
+    do_systemtap_backend "${systemtap_opts[@]}"
 
     CT_Popd
     CT_EndStep
@@ -58,9 +56,9 @@ do_systemtap_headers() {
     CT_DoStep INFO "CT_SYSROOT_DIR: ${CT_SYSROOT_DIR}"
     mkdir -p "${CT_SYSROOT_DIR}/usr/include/sys/"
     cp "${CT_SRC_DIR}/systemtap/includes/sys/sdt.h" \
-	    "${CT_SYSROOT_DIR}/usr/include/sys/"
+       "${CT_SYSROOT_DIR}/usr/include/sys/"
     echo "#define _SDT_ASM_SECTION_AUTOGROUP_SUPPORT 1" > \
-	    "${CT_SYSROOT_DIR}/usr/include/sys/sdt-config.h"
+         "${CT_SYSROOT_DIR}/usr/include/sys/sdt-config.h"
     CT_EndStep
 }
 
@@ -85,9 +83,7 @@ do_systemtap_for_target() {
     systemtap_opts+=( "destdir=${CT_SYSROOT_DIR}" )
     systemtap_opts+=( "shared=${CT_SHARED_LIBS}" )
 
-    do_systemtap_configure "${systemtap_opts[@]}"
-    do_systemtap_build
-    do_systemtap_install "destdir=${CT_SYSROOT_DIR}"
+    do_systemtap_backend "${systemtap_opts[@]}"
 
     CT_Popd
     CT_EndStep
@@ -101,7 +97,7 @@ fi
 #     cflags        : cflags to use             : string    : (empty)
 #     ldflags       : ldflags to use            : string    : (empty)
 #     destdir       : install destination       : dir       : (none)
-do_systemtap_configure() {
+do_systemtap_backend() {
     local host
     local prefix
     local cflags
@@ -128,24 +124,17 @@ do_systemtap_configure() {
         --host=${host}                              \
         --prefix="${prefix}"                        \
         --enable-static                             \
-        --without-python2-probes	            \
-        --without-python3-probes	            \
-	--without-debuginfod                        \
-	--without-nss                               \
-	--without-openssl                           \
-	--disable-sqlite                            \
-	--without-avahi                             \
+        --without-python2-probes                    \
+        --without-python3-probes                    \
+        --without-debuginfod                        \
+        --without-nss                               \
+        --without-openssl                           \
+        --disable-sqlite                            \
+        --without-avahi                             \
         "${extra_config[@]}"
-}
 
-do_systemtap_build() {
     CT_DoLog EXTRA "Building SystemTap"
     CT_DoExecLog ALL make ${CT_JOBSFLAGS}
-}
-
-# Install SYSTEMTAP
-#     destdir       : install destination       : dir       : (none)
-do_systemtap_install() {
     CT_DoLog EXTRA "Installing SystemTap"
     CT_DoExecLog ALL make install DESTDIR="${destdir}"
 }
