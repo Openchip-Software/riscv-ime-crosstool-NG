@@ -101,11 +101,13 @@ do_elfutils_backend() {
     CFLAGS="${cflags}"                              \
     LDFLAGS="${ldflags}"                            \
     ${CONFIG_SHELL}                                 \
-    "${CT_SRC_DIR}/elfutils/configure"             \
+    "${CT_SRC_DIR}/elfutils/configure"              \
         --build=${CT_BUILD}                         \
         --host=${host}                              \
         --prefix="${prefix}"                        \
-        --enable-static                             \
+	--disable-textrelcheck                      \
+	--disable-libdebuginfod                     \
+	--disable-debuginfod                        \
         "${extra_config[@]}"
 
     CT_DoLog EXTRA "Building elfutils"

@@ -79,10 +79,12 @@ config MPC_NEEDED
 
 config ELFUTILS_NEEDED
     bool
+    select ZLIB_NEEDED
     select COMP_LIBS_ELFUTILS
 
 config ELFUTILS_TARGET
     bool
+    select ZLIB_TARGET
     select COMP_LIBS_ELFUTILS
 
 config LIBELF_NEEDED
@@ -111,6 +113,10 @@ config NCURSES_TARGET
 
 config ZLIB_NEEDED
     bool "Build local zlib"
+    select COMP_LIBS_ZLIB
+
+config ZLIB_TARGET
+    bool
     select COMP_LIBS_ZLIB
 
 config SYSTEMTAP_NEEDED
