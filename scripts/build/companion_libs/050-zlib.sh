@@ -82,7 +82,8 @@ do_zlib_for_target() {
             prefix="/usr"
             ;;
     esac
-    zlib_opts+=( "cflags=${CT_ALL_TARGET_CFLAGS}" )
+    # We add -fPIC because elfutils insists on building .so libs
+    zlib_opts+=( "cflags=${CT_ALL_TARGET_CFLAGS} -fPIC" )
     zlib_opts+=( "prefix=${prefix}" )
     zlib_opts+=( "destdir=${CT_SYSROOT_DIR}" )
     zlib_opts+=( "shared=${CT_SHARED_LIBS}" )

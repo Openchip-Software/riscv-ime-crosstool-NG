@@ -105,7 +105,6 @@ do_elfutils_backend() {
         --build=${CT_BUILD}                         \
         --host=${host}                              \
         --prefix="${prefix}"                        \
-	--disable-textrelcheck                      \
 	--disable-libdebuginfod                     \
 	--disable-debuginfod                        \
         "${extra_config[@]}"
