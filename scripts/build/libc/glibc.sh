@@ -106,7 +106,6 @@ glibc_backend_once()
     esac
 
     [ "${CT_GLIBC_ENABLE_WERROR}" != "y" ] && extra_config+=("--disable-werror")
-
     [ -n "${CT_PKGVERSION}" ] && extra_config+=("--with-pkgversion=${CT_PKGVERSION}")
     [ -n "${CT_TOOLCHAIN_BUGURL}" ] && extra_config+=("--with-bugurl=${CT_TOOLCHAIN_BUGURL}")
 
