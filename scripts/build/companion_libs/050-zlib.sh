@@ -22,7 +22,7 @@ do_zlib_extract() {
     CT_ExtractPatch ZLIB
 }
 
-if [ "${CT_ELFUTILS}" = "y" ]; then
+if [ "${CT_ZLIB}" = "y" ]; then
 
 # Build zlib for running on build
 # - always build statically
@@ -107,6 +107,7 @@ do_zlib_backend() {
     local prefix
     local cflags
     local ldflags
+    local destdir
     local arg
     local -a extra_config
     local -a extra_make
