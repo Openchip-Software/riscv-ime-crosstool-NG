@@ -77,6 +77,14 @@ config MPC_NEEDED
     select MPFR_NEEDED
     select COMP_LIBS_MPC
 
+config ELFUTILS_NEEDED
+    bool
+    select COMP_LIBS_ELFUTILS
+
+config ELFUTILS_TARGET
+    bool
+    select COMP_LIBS_ELFUTILS
+
 config LIBELF_NEEDED
     bool
     select COMP_LIBS_LIBELF
@@ -111,7 +119,7 @@ config SYSTEMTAP_NEEDED
 
 config SYSTEMTAP_TARGET
     bool
-    select LIBELF_TARGET
+    select ELFUTILS_TARGET
     select COMP_LIBS_SYSTEMTAP
 
 # FIXME remove these legacy knobs
@@ -142,6 +150,10 @@ config CLOOG
 config MPC
     def_bool y
     depends on MPC_NEEDED
+
+config ELFUTILS
+    def_bool y
+    depends on ELFUTILS_NEEDED
 
 config LIBELF
     def_bool y
