@@ -1,0 +1,4 @@
+repository='git https://sourceware.org/git/elfutils.git'
+mirrors='$(CT_Mirrors sourceware elfutils/${CT_ELFUTILS_VERSION})'
+relevantpattern='*.*|.'
+archive_formats='.tar.bz2'
