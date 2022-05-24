@@ -9,7 +9,7 @@ do_zlib_for_host() { :; }
 do_zlib_for_target() { :; }
 
 # Overide functions depending on configuration
-if [ "${CT_ZLIB}" = "y" ]; then
+if [ "${CT_ZLIB_TARGET}" = "y" -o  "${CT_ZLIB}" = "y" ]; then
 
 # Download zlib
 do_zlib_get() {
@@ -20,6 +20,8 @@ do_zlib_get() {
 do_zlib_extract() {
     CT_ExtractPatch ZLIB
 }
+
+if [ "${CT_ZLIB}" = "y" ]; then
 
 # Build zlib for running on build
 # - always build statically
@@ -60,6 +62,37 @@ do_zlib_for_host() {
     CT_Popd
     CT_EndStep
 }
+fi
+
+if [ "${CT_ZLIB_TARGET}" = "y" ]; then
+do_zlib_for_target() {
+    local -a zlib_opts
+    local prefix
+
+    CT_DoStep INFO "Installing zlib for target"
+    CT_mkdir_pushd "${CT_BUILD_DIR}/build-zlib-target-${CT_HOST}"
+
+    zlib_opts+=( "host=${CT_TARGET}" )
+    case "${CT_TARGET}" in
+        *-*-mingw*)
+            prefix="/mingw"
+            ;;
+        *)
+            prefix="/usr"
+            ;;
+    esac
+    # We add -fPIC because elfutils insists on building .so libs
+    zlib_opts+=( "cflags=${CT_ALL_TARGET_CFLAGS} -fPIC" )
+    zlib_opts+=( "prefix=${prefix}" )
+    zlib_opts+=( "destdir=${CT_SYSROOT_DIR}" )
+    zlib_opts+=( "shared=${CT_SHARED_LIBS}" )
+
+    do_zlib_backend "${zlib_opts[@]}"
+
+    CT_Popd
+    CT_EndStep
+}
+fi
 
 # Build zlib
 #     Parameter     : description               : type      : default
@@ -67,11 +100,13 @@ do_zlib_for_host() {
 #     prefix        : prefix to install into    : dir       : (none)
 #     cflags        : cflags to use             : string    : (empty)
 #     ldflags       : ldflags to use            : string    : (empty)
+#     destdir       : install destination       : dir       : (none)
 do_zlib_backend() {
     local host
     local prefix
     local cflags
     local ldflags
+    local destdir
     local arg
     local -a extra_config
     local -a extra_make
@@ -126,7 +161,7 @@ do_zlib_backend() {
     fi
 
     CT_DoLog EXTRA "Installing zlib"
-    CT_DoExecLog ALL make "${extra_make[@]}" install
+    CT_DoExecLog ALL make "${extra_make[@]}" install DESTDIR="${destdir}"
 }
 
 fi # CT_ZLIB

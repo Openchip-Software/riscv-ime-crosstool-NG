@@ -105,6 +105,10 @@ config ZLIB_NEEDED
     bool "Build local zlib"
     select COMP_LIBS_ZLIB
 
+config ZLIB_TARGET
+    bool
+    select COMP_LIBS_ZLIB
+
 # FIXME remove these legacy knobs
 config LIBICONV
     def_bool y
