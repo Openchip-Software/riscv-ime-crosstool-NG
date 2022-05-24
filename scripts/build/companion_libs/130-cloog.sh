@@ -6,6 +6,7 @@ do_cloog_get() { :; }
 do_cloog_extract() { :; }
 do_cloog_for_build() { :; }
 do_cloog_for_host() { :; }
+do_cloog_headers() { :; }
 do_cloog_for_target() { :; }
 
 # Overide functions depending on configuration

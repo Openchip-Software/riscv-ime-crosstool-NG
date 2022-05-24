@@ -4,6 +4,7 @@ do_libelf_get() { :; }
 do_libelf_extract() { :; }
 do_libelf_for_build() { :; }
 do_libelf_for_host() { :; }
+do_libelf_headers() { :; }
 do_libelf_for_target() { :; }
 
 if [ "${CT_LIBELF}" = "y" -o "${CT_LIBELF_TARGET}" = "y" ]; then

@@ -9,6 +9,7 @@ do_picolibc_get() { :; }
 do_picolibc_extract() { :; }
 do_picolibc_for_build() { :; }
 do_picolibc_for_host() { :; }
+do_picolibc_headers() { :; }
 do_picolibc_for_target() { :; }
 
 if [ "${CT_COMP_LIBS_PICOLIBC}" = "y" ]; then

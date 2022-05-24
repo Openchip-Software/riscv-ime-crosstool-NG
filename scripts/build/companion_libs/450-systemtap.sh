@@ -6,6 +6,7 @@ do_systemtap_get() { :; }
 do_systemtap_extract() { :; }
 do_systemtap_for_build() { :; }
 do_systemtap_for_host() { :; }
+do_systemtap_headers() { :; }
 do_systemtap_for_target() { :; }
 
 # Overide functions depending on configuration
@@ -27,14 +28,17 @@ if [ "${CT_SYSTEMTAP}" = "y" ]; then
 do_systemtap_for_host() {
     local -a systemtap_opts
 
-    CT_DoStep INFO "Installing SYSTEMTAP for host"
+    CT_DoStep INFO "Installing SystemTap for host"
     CT_mkdir_pushd "${CT_BUILD_DIR}/build-systemtap-host-${CT_HOST}"
 
     systemtap_opts+=( "host=${CT_HOST}" )
     systemtap_opts+=( "prefix=${CT_HOST_COMPLIBS_DIR}" )
     systemtap_opts+=( "cflags=${CT_CFLAGS_FOR_HOST}" )
     systemtap_opts+=( "ldflags=${CT_LDFLAGS_FOR_HOST}" )
-    do_systemtap_backend "${systemtap_opts[@]}"
+
+    do_systemtap_configure "${systemtap_opts[@]}"
+    do_systemtap_build
+    do_systemtap_install
 
     CT_Popd
     CT_EndStep
@@ -42,10 +46,29 @@ do_systemtap_for_host() {
 fi
 
 if [ "${CT_SYSTEMTAP_TARGET}" = "y" ]; then
+
+# SystemTap's configure expects a working toolchain incl. glibc.
+# However, glibc needs SystemTap headers to enable the stap probes.
+# The header file sdt-config.h needs a configure test to be generated.
+# Let's break this cyclic dependency, by assuming a failing configure
+# test and generating sdt-config.h from here.
+# The later installation will fix that in the sysroot.
+do_systemtap_headers() {
+    CT_DoStep INFO "CT_SRC_DIR: ${CT_SRC_DIR}"
+    CT_DoStep INFO "CT_SYSROOT_DIR: ${CT_SYSROOT_DIR}"
+    mkdir -p "${CT_SYSROOT_DIR}/usr/include/sys/"
+    cp "${CT_SRC_DIR}/systemtap/includes/sys/sdt.h" \
+	    "${CT_SYSROOT_DIR}/usr/include/sys/"
+    echo "#define _SDT_ASM_SECTION_AUTOGROUP_SUPPORT 1" > \
+	    "${CT_SYSROOT_DIR}/usr/include/sys/sdt-config.h"
+    CT_EndStep
+}
+
 do_systemtap_for_target() {
     local -a systemtap_opts
+    local prefix
 
-    CT_DoStep INFO "Installing SYSTEMTAP for target"
+    CT_DoStep INFO "Installing SystemTap for target"
     CT_mkdir_pushd "${CT_BUILD_DIR}/build-systemtap-target-${CT_HOST}"
 
     systemtap_opts+=( "host=${CT_TARGET}" )
@@ -61,21 +84,24 @@ do_systemtap_for_target() {
     systemtap_opts+=( "prefix=${prefix}" )
     systemtap_opts+=( "destdir=${CT_SYSROOT_DIR}" )
     systemtap_opts+=( "shared=${CT_SHARED_LIBS}" )
-    do_systemtap_backend "${systemtap_opts[@]}"
+
+    do_systemtap_configure "${systemtap_opts[@]}"
+    do_systemtap_build
+    do_systemtap_install "destdir=${CT_SYSROOT_DIR}"
 
     CT_Popd
     CT_EndStep
 }
 fi
 
-# Build SYSTEMTAP
+# Configure SYSTEMTAP
 #     Parameter     : description               : type      : default
 #     host          : machine to run on         : tuple     : (none)
 #     prefix        : prefix to install into    : dir       : (none)
 #     cflags        : cflags to use             : string    : (empty)
 #     ldflags       : ldflags to use            : string    : (empty)
 #     destdir       : install destination       : dir       : (none)
-do_systemtap_backend() {
+do_systemtap_configure() {
     local host
     local prefix
     local cflags
@@ -87,47 +113,35 @@ do_systemtap_backend() {
         eval "${arg// /\\ }"
     done
 
-    CT_DoLog EXTRA "Configuring SYSTEMTAP"
+    if [ "${shared}" != "y" ]; then
+        extra_config+=("--disable-shared")
+    fi
 
-    # To avoind “illegal text-relocation” linking error against
-    # the static library, see:
-    #     https://github.com/Homebrew/homebrew-core/pull/25470
-    case "${host}" in
-        *darwin*)
-            extra_config+=("--with-pic")
-            ;;
-    esac
+    CT_DoLog EXTRA "Configuring SystemTap"
 
-    # FIXME: SYSTEMTAP's configure script doesn't respect the host parameter
-    # when not cross-compiling, ie when build == host.
     CT_DoExecLog CFG                                \
-    CC="${host}-gcc"                                \
-    CFLAGS="${cflags} -fexceptions"                 \
+    CFLAGS="${cflags}"                              \
     LDFLAGS="${ldflags}"                            \
     ${CONFIG_SHELL}                                 \
     "${CT_SRC_DIR}/systemtap/configure"             \
         --build=${CT_BUILD}                         \
         --host=${host}                              \
         --prefix="${prefix}"                        \
-        --disable-shared                            \
         --enable-static                             \
         --without-python2-probes	            \
+        --without-python3-probes	            \
         "${extra_config[@]}"
+}
 
-    CT_DoLog EXTRA "Building SYSTEMTAP"
+do_systemtap_build() {
+    CT_DoLog EXTRA "Building SystemTap"
     CT_DoExecLog ALL make ${CT_JOBSFLAGS}
+}
 
-    if [ "${CT_COMPLIBS_CHECK}" = "y" ]; then
-        if [ "${host}" = "${CT_BUILD}" ]; then
-            CT_DoLog EXTRA "Checking SYSTEMTAP"
-            CT_DoExecLog ALL make ${CT_JOBSFLAGS} -s check
-        else
-            # Cannot run host binaries on build in a canadian cross
-            CT_DoLog EXTRA "Skipping check for SYSTEMTAP on the host"
-        fi
-    fi
-
-    CT_DoLog EXTRA "Installing SYSTEMTAP"
+# Install SYSTEMTAP
+#     destdir       : install destination       : dir       : (none)
+do_systemtap_install() {
+    CT_DoLog EXTRA "Installing SystemTap"
     CT_DoExecLog ALL make install DESTDIR="${destdir}"
 }
 

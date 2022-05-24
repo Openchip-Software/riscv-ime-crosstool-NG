@@ -111,6 +111,7 @@ config SYSTEMTAP_NEEDED
 
 config SYSTEMTAP_TARGET
     bool
+    select LIBELF_TARGET
     select COMP_LIBS_SYSTEMTAP
 
 # FIXME remove these legacy knobs
