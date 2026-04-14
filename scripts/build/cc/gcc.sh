@@ -895,7 +895,17 @@ gcc_movelibs()
         esac
         if [ -f "${gcc_dir}/${f}" ]; then
             CT_DoExecLog ALL mkdir -p "${dst_dir}"
-            CT_DoExecLog ALL mv "${gcc_dir}/${f}" "${dst_dir}/${f}"
+            # On incremental rebuilds, GCC's libatomic install uses shell
+            # redirection (`> libatomic_asneeded.so`) that follows an existing
+            # symlink and rewrites the target in-place, leaving ${gcc_dir}/${f}
+            # as a symlink already resolving to ${dst_dir}/${f}. In that case
+            # `mv` aborts with "are the same file"; just drop the stale symlink
+            # and let it be recreated below.
+            if [ "${gcc_dir}/${f}" -ef "${dst_dir}/${f}" ]; then
+                CT_DoExecLog ALL rm -f "${gcc_dir}/${f}"
+            else
+                CT_DoExecLog ALL mv "${gcc_dir}/${f}" "${dst_dir}/${f}"
+            fi
             CT_DoExecLog ALL ln -sf "${rel}/${dst_dir#${canon_prefix}/}/${f}" "${gcc_dir}/${f}"
         fi
     done
